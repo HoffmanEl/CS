@@ -1,17 +1,15 @@
-@0
-M=0      // Initialize R0 to 0 (False)
+// Bubble Sort Implementation
+// R1: Base address of the array
+// R2: Length of the array
+// R0: Will be set to -1 when sorting is complete
 
-@2
-D=M      // D = R2 (length of the array)
+// Initialize
+@R2
+D=M
 @n
-M=D      // Store length of array in n
+M=D      // n = length of array
 
-@1
-D=M      // D = R1 (start address of the array)
-@arr
-M=D      // Store start address of the array in arr
-
-// Outer loop
+// Outer loop (i)
 (OUTER_LOOP)
 @n
 D=M
@@ -21,66 +19,66 @@ D;JLE    // If n <= 0, end sorting
 @i
 M=0      // i = 0
 
-// Inner loop
+// Inner loop (j)
 (INNER_LOOP)
-@i
-D=M
 @n
-D=M-D
+D=M
+@i
+D=D-M
 D=D-1
 @OUTER_LOOP_END
 D;JLE    // If i >= n-1, end inner loop
 
-// Compare arr[i] and arr[i+1]
-@arr
+// Compare arr[j] and arr[j+1]
+@R1
 D=M
 @i
-A=D+M    // Address of arr[i]
-D=M      // D = arr[i]
+A=D+M    // Address of arr[j]
+D=M      // D = arr[j]
 @temp
-M=D      // temp = arr[i]
+M=D      // temp = arr[j]
 
-@arr
+@R1
 D=M
 @i
 D=D+M
-A=D+1    // Address of arr[i+1]
-D=M      // D = arr[i+1]
+A=D+1    // Address of arr[j+1]
+D=M      // D = arr[j+1]
 @temp
-D=D-M    // D = arr[i+1] - arr[i]
+D=D-M    // D = arr[j+1] - arr[j]
 
 @SKIP_SWAP
-D;JGE    // If arr[i+1] >= arr[i], skip swap
+D;JGE    // If arr[j+1] >= arr[j], skip swap
 
-// Swap arr[i] and arr[i+1]
-@arr
+// Swap arr[j] and arr[j+1]
+@R1
 D=M
 @i
-A=D+M    // Address of arr[i]
-D=M      // D = arr[i]
+A=D+M    // Address of arr[j]
+D=M      // D = arr[j]
 @temp
-M=D      // temp = arr[i]
+M=D      // temp = arr[j]
 
-@arr
+@R1
 D=M
 @i
 D=D+M
-A=D+1    // Address of arr[i+1]
-D=M      // D = arr[i+1]
-@arr
+A=D+1    // Address of arr[j+1]
+D=M      // D = arr[j+1]
+@R1
 A=M
 @i
-A=D+M    // Address of arr[i]
-M=D      // arr[i] = arr[i+1]
+A=D+M    // Address of arr[j]
+M=D      // arr[j] = arr[j+1]
 
 @temp
-D=M      // D = temp (original arr[i])
-@arr
+D=M      // D = temp (original arr[j])
+@R1
 A=M
 @i
 D=D+M
-A=D+1    // Address of arr[i+1]
-M=D      // arr[i+1] = temp
+A=D+1    // Address of arr[j+1]
+M=D      // arr[j+1] = temp
 
 (SKIP_SWAP)
 @i
@@ -95,8 +93,9 @@ M=M-1    // n--
 0;JMP
 
 (END)
-@0
-M=-1     // Set R0 to True (-1) to indicate completion
+@R0
+M=-1     // Set R0 to -1 to indicate completion
+
 (INFINITE_LOOP)
 @INFINITE_LOOP
 0;JMP    // Infinite loop to end the program
