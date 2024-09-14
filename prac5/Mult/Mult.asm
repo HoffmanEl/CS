@@ -1,59 +1,104 @@
+// Improved Mult.asm
+// Multiplies R1 and R2 and stores the result in R0.
+// (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
+
 // Initialize R0 to 0 (the result)
-@0
+@R0
 M=0
 
-// Load R2 (the multiplier) into D register
-@2
+// Check if R1 or R2 is 0
+@R1
 D=M
-
-// Check if R2 is 0
 @END
-D;JEQ
+D;JEQ    // If R1 is 0, jump to END
 
-// Check if R2 is negative
-@POSITIVE
+@R2
+D=M
+@END
+D;JEQ    // If R2 is 0, jump to END
+
+// Initialize sign flag
+@sign
+M=1
+
+// Check if R1 is negative
+@R1
+D=M
+@R1_POS
 D;JGE
+@sign
+M=-M    // Flip sign
+@R1
+M=-M    // Make R1 positive
 
-// If R2 is negative, make it positive and set a flag
-@NEG_FLAG
-M=-1
-@2
-M=-M
-@POSITIVE
+(R1_POS)
+// Check if R2 is negative
+@R2
+D=M
+@R2_POS
+D;JGE
+@sign
+M=-M    // Flip sign
+@R2
+M=-M    // Make R2 positive
+
+(R2_POS)
+// Choose smaller number for loop counter
+@R1
+D=M
+@R2
+D=D-M
+@USE_R2
+D;JGT
+
+// Use R1 as counter
+@R1
+D=M
+@counter
+M=D
+@R2
+D=M
+@adder
+M=D
+@LOOP
 0;JMP
 
-(POSITIVE)
-// Initialize loop counter
-@2
+(USE_R2)
+// Use R2 as counter
+@R2
 D=M
-@COUNTER
+@counter
+M=D
+@R1
+D=M
+@adder
 M=D
 
 (LOOP)
-@COUNTER
+@counter
 D=M
-@SIGN_CHECK
-D;JLE    // If COUNTER <= 0, check the sign
+@APPLY_SIGN
+D;JLE    // If counter <= 0, apply sign
 
-@1       // Address of RAM[1] (R1)
-D=M      // D = RAM[1]
-@0       // Address of RAM[0] (R0)
-M=M+D    // R0 = R0 + R1
+@adder
+D=M
+@R0
+M=M+D    // R0 += adder
 
-@COUNTER
-M=M-1    // Decrement COUNTER
+@counter
+M=M-1    // Decrement counter
 
 @LOOP
 0;JMP
 
-(SIGN_CHECK)
-@NEG_FLAG
+(APPLY_SIGN)
+@sign
 D=M
 @END
-D;JEQ    // If NEG_FLAG is 0, end the program
+D;JGT    // If sign is positive, end the program
 
-// If NEG_FLAG is -1, negate the result
-@0
+// If sign is negative, negate the result
+@R0
 M=-M
 
 (END)
