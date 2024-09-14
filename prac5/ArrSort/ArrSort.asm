@@ -1,7 +1,3 @@
-// Sorts the array of length R2 whose first element is at RAM[R1] in ascending order in place. Sets R0 to True (-1) when complete.
-// (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
-
-// Put your code here.
 // Sorts the array of length R2 whose first element is at RAM[R1] in ascending order in place.
 // Sets R0 to True (-1) when complete.
 
@@ -37,7 +33,7 @@ M=D      // Store current element value in TMP
 D=M      // D = START (current element address)
 A=D      // A = address of the current element
 D=M      // D = value of the current element
-@1       // Address of RAM[1] (R1)
+@NEXT
 D=D+1    // Address of next element
 A=D
 D=M      // D = value of the next element
@@ -112,3 +108,9 @@ M=-1     // Set R0 to True (-1) to indicate completion
 @END
 0;JMP    // Infinite loop to end the program
 
+(NEXT)
+@START
+D=M      // D = START (current element address)
+D=D+1    // Address of the next element
+@NEXT
+M=D      // Store the address of the next element
