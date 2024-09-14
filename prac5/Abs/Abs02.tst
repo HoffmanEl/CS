@@ -1,8 +1,8 @@
 // Abs02.tst
 
 load Abs.asm,
-output-file Abs00.out,
-compare-to Abs00.cmp,
+output-file Abs02.out,
+compare-to Abs02.cmp,
 output-list RAM[0]%D2.6.2 RAM[1]%D2.6.2;
 
 set PC 0,
