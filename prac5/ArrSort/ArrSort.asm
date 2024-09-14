@@ -1,116 +1,102 @@
-// Sorts the array of length R2 whose first element is at RAM[R1] in ascending order in place.
-// Sets R0 to True (-1) when complete.
-
-@0       // Address of RAM[0] (R0)
+@0
 M=0      // Initialize R0 to 0 (False)
 
-@2       // Address of RAM[2] (R2)
-D=M      // D = RAM[2] (length of the array)
-@COUNTER
-M=D      // Store length of array in COUNTER
+@2
+D=M      // D = R2 (length of the array)
+@n
+M=D      // Store length of array in n
 
-@1       // Address of RAM[1] (R1)
-D=M      // D = RAM[1] (start address of the array)
-@START
-M=D      // Store start address of the array in START
+@1
+D=M      // D = R1 (start address of the array)
+@arr
+M=D      // Store start address of the array in arr
 
-// Bubble sort algorithm
-(SORT_LOOP)
-@COUNTER
-D=M      // D = COUNTER
+// Outer loop
+(OUTER_LOOP)
+@n
+D=M
 @END
-D;JEQ    // If COUNTER == 0, jump to END
+D;JLE    // If n <= 0, end sorting
 
-@START
-D=M      // D = START (current element address)
-A=D      // A = address of the current element
-D=M      // D = value of the current element
-@TMP
-M=D      // Store current element value in TMP
+@i
+M=0      // i = 0
 
-// Compare and swap adjacent elements
-@START
-D=M      // D = START (current element address)
-A=D      // A = address of the current element
-D=M      // D = value of the current element
-@NEXT
-D=D+1    // Address of next element
-A=D
-D=M      // D = value of the next element
+// Inner loop
+(INNER_LOOP)
+@i
+D=M
+@n
+D=M-D
+D=D-1
+@OUTER_LOOP_END
+D;JLE    // If i >= n-1, end inner loop
 
-@TMP
-D=D-M    // D = value of next element - current element
-@SWAP
-D;JLT    // If next element < current element, jump to SWAP
+// Compare arr[i] and arr[i+1]
+@arr
+D=M
+@i
+A=D+M    // Address of arr[i]
+D=M      // D = arr[i]
+@temp
+M=D      // temp = arr[i]
 
-// Move to the next pair of elements
-@START
-D=M      // D = START (current element address)
-D=D+1    // Address of the next element
-@START
-M=D      // Store the new START address
-@COUNTER
-D=M      // D = COUNTER
-D=D-1    // Decrement COUNTER
-@COUNTER
-M=D      // Store new COUNTER value
+@arr
+D=M
+@i
+D=D+M
+A=D+1    // Address of arr[i+1]
+D=M      // D = arr[i+1]
+@temp
+D=D-M    // D = arr[i+1] - arr[i]
 
-@SORT_LOOP
-0;JMP    // Repeat the loop
+@SKIP_SWAP
+D;JGE    // If arr[i+1] >= arr[i], skip swap
 
-// Swap elements
-(SWAP)
-@START
-D=M      // D = START (current element address)
-A=D      // A = address of the current element
-D=M      // D = value of the current element
-@TMP
-M=D      // Store the current element value in TMP
+// Swap arr[i] and arr[i+1]
+@arr
+D=M
+@i
+A=D+M    // Address of arr[i]
+D=M      // D = arr[i]
+@temp
+M=D      // temp = arr[i]
 
-// Swap with the next element
-@START
-D=M      // D = START (current element address)
-D=D+1    // Address of the next element
-A=D
-D=M      // D = value of the next element
-@START
-D=M      // D = START (current element address)
-A=D      // A = address of the current element
-M=D      // Set the current element to the next element's value
+@arr
+D=M
+@i
+D=D+M
+A=D+1    // Address of arr[i+1]
+D=M      // D = arr[i+1]
+@arr
+A=M
+@i
+A=D+M    // Address of arr[i]
+M=D      // arr[i] = arr[i+1]
 
-@TMP
-D=M      // D = value stored in TMP
-@START
-D=M      // D = START (current element address)
-D=D+1    // Address of the next element
-A=D
-M=D      // Set the next element to the value stored in TMP
+@temp
+D=M      // D = temp (original arr[i])
+@arr
+A=M
+@i
+D=D+M
+A=D+1    // Address of arr[i+1]
+M=D      // arr[i+1] = temp
 
-// Move to the next pair of elements
-@START
-D=M      // D = START (current element address)
-D=D+1    // Address of the next element
-@START
-M=D      // Store the new START address
-@COUNTER
-D=M      // D = COUNTER
-D=D-1    // Decrement COUNTER
-@COUNTER
-M=D      // Store new COUNTER value
+(SKIP_SWAP)
+@i
+M=M+1    // i++
+@INNER_LOOP
+0;JMP
 
-@SORT_LOOP
-0;JMP    // Repeat the loop
+(OUTER_LOOP_END)
+@n
+M=M-1    // n--
+@OUTER_LOOP
+0;JMP
 
-// End of the program
 (END)
 @0
 M=-1     // Set R0 to True (-1) to indicate completion
-@END
+(INFINITE_LOOP)
+@INFINITE_LOOP
 0;JMP    // Infinite loop to end the program
-
-(NEXT)
-@START
-D=M      // D = START (current element address)
-D=D+1    // Address of the next element
-@NEXT
-M=D      // Store the address of the next element
