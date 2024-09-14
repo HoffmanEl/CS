@@ -1,4 +1,4 @@
-// Sample Test file for Abs.asm
+// abs00.tst Sample Test file for Abs.asm
 // Follows the Test Scripting Language format described in 
 // Appendix B of the book "The Elements of Computing Systems"
 

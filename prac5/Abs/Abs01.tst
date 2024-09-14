@@ -1,6 +1,5 @@
-// Sample Test file for Abs.asm
-// Follows the Test Scripting Language format described in 
-// Appendix B of the book "The Elements of Computing Systems"
+// abs01.tst
+
 
 load Abs.asm,
 output-file Abs00.out,
