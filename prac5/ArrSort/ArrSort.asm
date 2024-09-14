@@ -1,101 +1,67 @@
-// Bubble Sort Implementation
-// R1: Base address of the array
-// R2: Length of the array
-// R0: Will be set to -1 when sorting is complete
 
-// Initialize
-@R2
-D=M
-@n
-M=D      // n = length of array
+@SP
+M=256 // Set stack pointer to the top of the stack
 
-// Outer loop (i)
-(OUTER_LOOP)
-@n
-D=M
-@END
-D;JLE    // If n <= 0, end sorting
-
+// Variables
+@arr
+M=0 // Initialize the array pointer
 @i
-M=0      // i = 0
-
-// Inner loop (j)
-(INNER_LOOP)
-@n
-D=M
-@i
-D=D-M
-D=D-1
-@OUTER_LOOP_END
-D;JLE    // If i >= n-1, end inner loop
-
-// Compare arr[j] and arr[j+1]
-@R1
-D=M
-@i
-A=D+M    // Address of arr[j]
-D=M      // D = arr[j]
+M=0 // Initialize the outer loop counter
+@j
+M=0 // Initialize the inner loop counter
 @temp
-M=D      // temp = arr[j]
+M=0 // Initialize the temporary variable
 
-@R1
-D=M
-@i
-D=D+M
-A=D+1    // Address of arr[j+1]
-D=M      // D = arr[j+1]
-@temp
-D=D-M    // D = arr[j+1] - arr[j]
+// Main program
+(LOOP)
+    // Load the array element at index i into D
+    @arr
+    A=M
+    D=M
 
-@SKIP_SWAP
-D;JGE    // If arr[j+1] >= arr[j], skip swap
+    // Load the array element at index i+1 into A
+    @arr
+    A=M+1
 
-// Swap arr[j] and arr[j+1]
-@R1
-D=M
-@i
-A=D+M    // Address of arr[j]
-D=M      // D = arr[j]
-@temp
-M=D      // temp = arr[j]
+    // Compare D and A
+    D=D-A
 
-@R1
-D=M
-@i
-D=D+M
-A=D+1    // Address of arr[j+1]
-D=M      // D = arr[j+1]
-@R1
-A=M
-@i
-A=D+M    // Address of arr[j]
-M=D      // arr[j] = arr[j+1]
+    // If D > 0, swap the elements
+    D;JGT
+    @arr
+    A=M
+    M=D
+    @arr
+    A=M+1
+    M=D+1
 
-@temp
-D=M      // D = temp (original arr[j])
-@R1
-A=M
-@i
-D=D+M
-A=D+1    // Address of arr[j+1]
-M=D      // arr[j+1] = temp
+    // Increment the inner loop counter
+    @j
+    M=M+1
 
-(SKIP_SWAP)
-@i
-M=M+1    // i++
-@INNER_LOOP
-0;JMP
+    // Check if the inner loop counter reached n-i-1
+    @n
+    D=M
+    @i
+    D=D-A-1
+    @j
+    D=D+M
+    @LOOP
+    D;JLT
 
-(OUTER_LOOP_END)
-@n
-M=M-1    // n--
-@OUTER_LOOP
-0;JMP
+    // Increment the outer loop counter
+    @i
+    M=M+1
 
+    // Check if the outer loop counter reached n-1
+    @n
+    D=M
+    @i
+    D=D-A-1
+    @LOOP
+    D;JLT
+
+// End of program
 (END)
-@R0
-M=-1     // Set R0 to -1 to indicate completion
-
-(INFINITE_LOOP)
-@INFINITE_LOOP
-0;JMP    // Infinite loop to end the program
+    @END
+    0;JMP
