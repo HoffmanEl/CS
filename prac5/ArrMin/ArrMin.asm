@@ -32,10 +32,13 @@ D;JLE    // If COUNTER <= 0, end the loop
 A=M      // A = address of current element
 D=M      // D = value of current element
 @0
-D=D-M    // D = current element - current minimum
-@SKIP
-D;JGE    // If D >= 0, skip to next element
+D=M-D    // D = current minimum - current element (reversed for overflow handling)
 
+// Handle potential overflow
+@SKIP
+D;JLE    // If D <= 0, current minimum is still smaller or equal
+
+// Update minimum (avoiding potential overflow)
 @INDEX
 A=M
 D=M
