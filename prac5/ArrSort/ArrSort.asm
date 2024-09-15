@@ -1,103 +1,128 @@
-// The program sorts the array starting at the address in R1 with length specified in R2.
-// The sort is in descending order - the largest number at the head of the array.
+// Sorts the array of length R2 whose first element is at RAM[R1] in ascending order in place. Sets R0 to True (-1) when complete.
+// (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
 
-    @outIndex     // init outer index
-    M=0
+// Put your code here.
+@R1
+D=M
 
-(OUTER)
-    @R2
-    D=M
-    @inIndex      // init the inner index
-    M=D-1
+@R2
+D=M
+@TRACK
+M=D-1
 
-(INNER)
-    @R1
-    D=M
-    @inIndex
-    A=D+M         // goes to address arr[inIndex]
-    D=A-1
-    @firstaddress // stores the address of arr[inIndex]
-    M=D
-    D=D+1         // goes to address arr[inIndex - 1]
-    @secondaddress // stores the address of arr[inIndex - 1]
-    M=D
+@R2
+D=M
+@TRACK_LOOP
+M=D-1
 
-    @firstaddress
-    A=M
-    D=M           // get the value arr[inIndex]
-    @secondaddress
-    A=M
-    D=D-M         // calc val (arr[inIndex] - arr[inIndex - 1])
-    @SWAP
-    D;JLT         // if(arr[inIndex] - arr[inIndex - 1]) > 0 then swap values
+@R1
+D=M
+@CURR
+M=D
 
-    @inIndex
-    M=M-1         // inIndex = inIndex - 1
-    D=M
-    @outIndex
-    D=D-M
-    @INNER        // if (inIndex > outIndex) jump to inner loop
-    D;JGT
+@CURR
+A=M
+D=M
 
-    @outIndex
-    M=M+1
-    D=M
-    @R2
-    D=M-D
-    @OUTER        // if (R2 - inIndex > 0) jump to outer loop
-    D;JGT
+@IS_POS
+D;JGE
+@IS_NEG
+D;JLT
 
-    @TRUE
-    0;JMP
+(IS_POS)
+@CURR
+A=M+1
+D=M
 
-(SWAP)
-    // swaps arr[inIndex] and arr[inIndex-1]
-    @firstaddress
-    A=M
-    D=M
-    @firstvalue   // stores value of arr[inIndex]
-    M=D
+@VAL_SWAP
+D;JLT
 
-    @secondaddress
-    A=M
-    D=M
-    @secondvalue  // stores the value of arr[inIndex-1]
-    M=D
+@LOOP
+D;JGE
 
-    @secondvalue  // stores the value of arr[inIndex-1] in arr[inIndex]
-    D=M
-    @firstaddress
-    A=M
-    M=D
+(IS_NEG)
+@CURR
+A=M+1
+D=M
 
-    @firstvalue   // stores the value of arr[inIndex] in arr[inIndex-1]
-    D=M
-    @secondaddress
-    A=M
-    M=D
+@NEXT
+D;JGE
 
-    @inIndex
-    M=M-1
-    D=M
-    @outIndex
-    D=D-M
-    @INNER        //if(inIndex - outIndex > 0) jump to INNER loop
-    D;JGT
+@LOOP
+D;JLT
 
-    @outIndex
-    M=M+1
-    D=M
-    @R2
-    D=M-D
-    @OUTER        //if(length - outIndex > 0) jump to outer loop
-    D;JGT
+(LOOP)
+@CURR
+A=M
+D=M
+A=A+1
+D=D-M
 
-(TRUE)
-    @1
-    D=-A          // Set D to -1 (True)
-    @R0
-    M=D           // Store True (-1) in R0
+@VAL_SWAP
+D;JGT
+
+@NEXT
+0;JMP
+
+(VAL_SWAP)
+@CURR
+A=M+1
+D=M
+
+@TEMP
+M=D
+
+@CURR
+A=M
+D=M
+A=A+1
+M=D
+
+@TEMP
+D=M
+
+@CURR
+A=M
+M=D
+
+(NEXT)
+@CURR
+M=M+1
+D=M
+@TRACK
+M=M-1
+D=M
+@NEXT_LOOP
+D;JEQ
+
+(SIGN)
+@CURR
+A=M
+D=M
+@IS_POS
+D;JGE
+@IS_NEG
+D;JLT
+
+
+(NEXT_LOOP)
+@R1
+D=M
+@CURR
+M=D
+
+@TRACK_LOOP
+M=M-1
+D=M
+@TRACK
+M=D
+@END
+D;JEQ
+@LOOP
+D;JGT
 
 (END)
-    @END
-    0;JMP         // Infinite loop to end the program
+@R0
+M=-1
+@END
+0;JMP
