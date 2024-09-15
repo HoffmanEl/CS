@@ -11,7 +11,7 @@ M=M+D    // R2 = R1 + R2 - 1 (end address of array)
 @32767
 D=A
 @R0
-M=D     // R0 = 32767 (initial minimum)
+M=D     
 
 (LOOP)
 (CHECK_TERMINATE)
@@ -24,7 +24,7 @@ M=D     // R0 = 32767 (initial minimum)
 
     @R1
     A=M
-    D=M    // D = current element
+    D=M   
     @ELEM_POS
     D;JGE  // If element >= 0, go to ELEM_POS
     @ELEM_NEG
@@ -41,11 +41,11 @@ M=D     // R0 = 32767 (initial minimum)
     @R1
     M=M+1  // Move to next element
     @LOOP
-    0;JMP  // Continue loop
+    0;JMP  // Continue
 
 (END)
     @END
-    0;JMP  // Infinite loop at end
+    0;JMP  // end
 
 (R0_NEG)
     @R1
