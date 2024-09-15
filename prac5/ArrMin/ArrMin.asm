@@ -1,12 +1,9 @@
 // Initialize R0 with the first element of the array
 @1
 D=M      // D = RAM[1] (start address of the array)
-A=D      // A = address of the first element
-D=M      // D = value of the first element
-@0
-M=D      // R0 = first element (initial minimum)
+@INDEX
+M=D      // Store start address in INDEX
 
-// Initialize loop counter
 @2
 D=M      // D = RAM[2] (length of the array)
 @COUNTER
@@ -18,11 +15,12 @@ D=M
 @END
 D;JLE    // If length <= 0, end the loop
 
-// Initialize array index
-@1
-D=M      // D = RAM[1] (start address of the array)
+// Load first element
 @INDEX
-M=D      // INDEX = start address of the array
+A=M      // A = address of first element
+D=M      // D = value of first element
+@0
+M=D      // R0 = first element (initial minimum)
 
 (LOOP)
 @COUNTER
@@ -35,21 +33,6 @@ A=M      // A = address of current element
 D=M      // D = value of current element
 @0
 D=D-M    // D = current element - current minimum
-
-// Check for overflow
-@32767
-D=D-A
-@SKIP
-D;JGT    // If D > 32767, skip to next element (overflow)
-
-@32768
-D=D+A
-@SKIP
-D;JLT    // If D < -32768, skip to next element (underflow)
-
-@32768
-D=D+A    // Restore D to its original value
-
 @SKIP
 D;JGE    // If D >= 0, skip to next element
 
