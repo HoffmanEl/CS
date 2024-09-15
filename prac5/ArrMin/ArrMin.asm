@@ -36,14 +36,25 @@ D=M        // D = value of current element
 @0
 D=M-D      // D = current minimum - current element
 
-// Handle signed comparison to avoid overflow issues
-@SKIP
-D;JLE      // If D <= 0, skip (current minimum is smaller or equal)
+// Check for overflow in the subtraction result
+@OVERFLOW_CHECK
+D;JGE      // If D >= 0, skip overflow check (no overflow)
 
-// Update minimum if a smaller value is found
 @INDEX
 A=M
-D=M
+D=M        // Get the current element
+@OVERFLOW
+0;JMP      // Jump to overflow handler if overflow detected
+
+(OVERFLOW_CHECK)
+@0
+D=M        // Get the current minimum again
+@SKIP      // If no overflow, continue
+
+(OVERFLOW)
+@INDEX
+A=M
+D=M        // Get the current element
 @0
 M=D        // Update R0 with new minimum
 
