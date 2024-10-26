@@ -35,25 +35,28 @@ ParseTree* CompilerParser::compileProgram() {
 ParseTree* CompilerParser::compileClass() {
     ParseTree* tree = new ParseTree("class", "");
     
-    // class className {
-    tree->addChild(new ParseTree(mustBe("keyword", "class")->getType(), "class"));
-    tree->addChild(new ParseTree(mustBe("identifier", "")->getType(), "identifier"));
-    tree->addChild(new ParseTree(mustBe("symbol", "{")->getType(), "{"));
+    Token* classToken = mustBe("keyword", "class");
+    tree->addChild(new ParseTree(classToken->getType(), classToken->getValue()));
     
-    // classVarDec*
+    // Keep the actual identifier value
+    Token* className = mustBe("identifier", "");
+    tree->addChild(new ParseTree(className->getType(), className->getValue()));
+    
+    Token* openBrace = mustBe("symbol", "{");
+    tree->addChild(new ParseTree(openBrace->getType(), openBrace->getValue()));
+    
     while (have("keyword", "static") || have("keyword", "field")) {
         tree->addChild(compileClassVarDec());
     }
     
-    // subroutineDec*
     while (have("keyword", "constructor") || 
            have("keyword", "function") || 
            have("keyword", "method")) {
         tree->addChild(compileSubroutine());
     }
     
-    // }
-    tree->addChild(new ParseTree(mustBe("symbol", "}")->getType(), "}"));
+    Token* closeBrace = mustBe("symbol", "}");
+    tree->addChild(new ParseTree(closeBrace->getType(), closeBrace->getValue()));
     return tree;
 }
 
@@ -77,17 +80,20 @@ ParseTree* CompilerParser::compileClassVarDec() {
     }
     tree->addChild(new ParseTree(dataType->getType(), dataType->getValue()));
     
-    // varName
-    tree->addChild(new ParseTree(mustBe("identifier", "")->getType(), "identifier"));
+    // varName with actual value
+    Token* varName = mustBe("identifier", "");
+    tree->addChild(new ParseTree(varName->getType(), varName->getValue()));
     
-    // (',' varName)*
     while (have("symbol", ",")) {
-        tree->addChild(new ParseTree(mustBe("symbol", ",")->getType(), ","));
-        tree->addChild(new ParseTree(mustBe("identifier", "")->getType(), "identifier"));
+        Token* comma = mustBe("symbol", ",");
+        tree->addChild(new ParseTree(comma->getType(), comma->getValue()));
+        
+        Token* additionalVar = mustBe("identifier", "");
+        tree->addChild(new ParseTree(additionalVar->getType(), additionalVar->getValue()));
     }
     
-    // ;
-    tree->addChild(new ParseTree(mustBe("symbol", ";")->getType(), ";"));
+    Token* semicolon = mustBe("symbol", ";");
+    tree->addChild(new ParseTree(semicolon->getType(), semicolon->getValue()));
     return tree;
 }
 
