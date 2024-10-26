@@ -7,8 +7,14 @@
  */
 CompilerParser::CompilerParser(std::list<Token*> tokens) {
     this->tokens = tokens;
-    this->currentToken = tokens.begin();
+    if (!this->tokens.empty()) {
+        this->currentToken = this->tokens.begin();
+    } else {
+        // Initialize currentToken to a safe value when tokens list is empty
+        this->currentToken = this->tokens.end();
+    }
 }
+
 
 /**
  * Generates a parse tree for a single program
