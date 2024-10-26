@@ -3,11 +3,16 @@
 
 #include <list>
 #include <exception>
+#include <string>
 
 #include "ParseTree.h"
 #include "Token.h"
 
 class CompilerParser {
+    private:
+        std::list<Token*> tokens;
+        std::list<Token*>::iterator currentToken;
+
     public:
         CompilerParser(std::list<Token*> tokens);
 
@@ -29,7 +34,7 @@ class CompilerParser {
         ParseTree* compileExpression();
         ParseTree* compileTerm();
         ParseTree* compileExpressionList();
-        
+
         void next();
         Token* current();
         bool have(std::string expectedType, std::string expectedValue);
