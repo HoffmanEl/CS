@@ -5,15 +5,39 @@
  * Constructor for the CompilerParser
  * @param tokens A linked list of tokens to be parsed
  */
-CompilerParser::CompilerParser(std::list<Token*> tokens) {
-    this->tokens = tokens;
-    if (!this->tokens.empty()) {
-        this->currentToken = this->tokens.begin();
-    } else {
-        // Initialize currentToken to a safe value when tokens list is empty
-        this->currentToken = this->tokens.end();
+ParseTree* CompilerParser::compileClass() {
+    ParseTree* tree = new ParseTree("class", "");
+    
+    // class
+    Token* classToken = mustBe("keyword", "class");
+    tree->addChild(new ParseTree(classToken->getType(), classToken->getValue()));
+    
+    // className (keep the actual identifier value)
+    Token* className = mustBe("identifier", "");
+    tree->addChild(new ParseTree(className->getType(), className->getValue()));
+    
+    // {
+    Token* openBrace = mustBe("symbol", "{");
+    tree->addChild(new ParseTree(openBrace->getType(), openBrace->getValue()));
+    
+    // classVarDec*
+    while (have("keyword", "static") || have("keyword", "field")) {
+        tree->addChild(compileClassVarDec());
     }
+    
+    // subroutineDec*
+    while (have("keyword", "constructor") || 
+           have("keyword", "function") || 
+           have("keyword", "method")) {
+        tree->addChild(compileSubroutine());
+    }
+    
+    // }
+    Token* closeBrace = mustBe("symbol", "}");
+    tree->addChild(new ParseTree(closeBrace->getType(), closeBrace->getValue()));
+    return tree;
 }
+
 
 
 /**
@@ -68,7 +92,7 @@ ParseTree* CompilerParser::compileClassVarDec() {
     Token* varType = mustBe("keyword", "");
     tree->addChild(new ParseTree(varType->getType(), varType->getValue()));
     
-    // type
+    // type (int | char | boolean | className)
     Token* dataType;
     if (have("keyword", "")) {
         dataType = mustBe("keyword", "");
@@ -77,17 +101,22 @@ ParseTree* CompilerParser::compileClassVarDec() {
     }
     tree->addChild(new ParseTree(dataType->getType(), dataType->getValue()));
     
-    // varName
-    tree->addChild(new ParseTree(mustBe("identifier", "")->getType(), "identifier"));
+    // varName (keep the actual identifier value)
+    Token* varName = mustBe("identifier", "");
+    tree->addChild(new ParseTree(varName->getType(), varName->getValue()));
     
     // (',' varName)*
     while (have("symbol", ",")) {
-        tree->addChild(new ParseTree(mustBe("symbol", ",")->getType(), ","));
-        tree->addChild(new ParseTree(mustBe("identifier", "")->getType(), "identifier"));
+        Token* comma = mustBe("symbol", ",");
+        tree->addChild(new ParseTree(comma->getType(), comma->getValue()));
+        
+        Token* additionalVar = mustBe("identifier", "");
+        tree->addChild(new ParseTree(additionalVar->getType(), additionalVar->getValue()));
     }
     
     // ;
-    tree->addChild(new ParseTree(mustBe("symbol", ";")->getType(), ";"));
+    Token* semicolon = mustBe("symbol", ";");
+    tree->addChild(new ParseTree(semicolon->getType(), semicolon->getValue()));
     return tree;
 }
 
