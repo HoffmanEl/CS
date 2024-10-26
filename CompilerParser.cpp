@@ -119,17 +119,20 @@ ParseTree* CompilerParser::compileSubroutine() {
     }
     tree->addChild(new ParseTree(returnType->getType(), returnType->getValue()));
     
-    // subroutineName
-    tree->addChild(new ParseTree(mustBe("identifier", "")->getType(), "identifier"));
+    // subroutineName - store actual value instead of "identifier"
+    Token* subroutineName = mustBe("identifier", "");
+    tree->addChild(new ParseTree(subroutineName->getType(), subroutineName->getValue()));
     
     // (
-    tree->addChild(new ParseTree(mustBe("symbol", "(")->getType(), "("));
+    Token* openParen = mustBe("symbol", "(");
+    tree->addChild(new ParseTree(openParen->getType(), openParen->getValue()));
     
     // parameterList
     tree->addChild(compileParameterList());
     
     // )
-    tree->addChild(new ParseTree(mustBe("symbol", ")")->getType(), ")"));
+    Token* closeParen = mustBe("symbol", ")");
+    tree->addChild(new ParseTree(closeParen->getType(), closeParen->getValue()));
     
     // subroutineBody
     tree->addChild(compileSubroutineBody());
